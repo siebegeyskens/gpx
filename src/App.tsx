@@ -4,10 +4,14 @@ import * as React from 'react'
 
 import { GpxUpload } from './components/GpxUpload'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card'
+import { parseGpxToGeoJsonTrackOnly } from './gpx/parseGpx'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 export default function App() {
   const [gpxXml, setGpxXml] = React.useState<string | null>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)
+  const [parsed, setParsed] = React.useState<FeatureCollection<Geometry> | null>(null)
+  const [parseError, setParseError] = React.useState<string | null>(null)
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -17,6 +21,14 @@ export default function App() {
             onGpxLoaded={(xmlText, name) => {
               setGpxXml(xmlText)
               setFileName(name)
+              try {
+                const geojson = parseGpxToGeoJsonTrackOnly(xmlText)
+                setParsed(geojson)
+                setParseError(null)
+              } catch (e) {
+                setParsed(null)
+                setParseError(e instanceof Error ? e.message : 'Failed to parse GPX')
+              }
             }}
           />
         </section>
@@ -33,6 +45,13 @@ export default function App() {
                     <p className="text-sm text-muted-foreground">
                       Loaded: <span className="font-medium text-foreground">{fileName}</span>
                     </p>
+                    {parseError ? (
+                      <p className="text-sm text-destructive">Parse error: {parseError}</p>
+                    ) : parsed ? (
+                      <p className="text-sm text-muted-foreground">
+                        Parsed features: <span className="font-medium text-foreground">{parsed.features.length}</span>
+                      </p>
+                    ) : null}
                     <p className="text-sm text-muted-foreground">
                       Next step: parse GPX to GeoJSON and render the route on the map.
                     </p>
