@@ -1,0 +1,48 @@
+---
+description: Container vs presentational component pattern guidance
+globs: "**/*.tsx"
+alwaysApply: true
+---
+
+# Container vs Presentational Components
+
+- Presentational components focus on "how it looks".
+  - They mainly receive data + callbacks via props.
+  - They may include DOM markup and styling, but avoid fetching/mutation logic.
+- Container components focus on "how it works".
+  - They manage state, side-effects, and behavior (e.g., data loading, mutations).
+  - They provide props to presentational components and usually do not own markup/styling themselves.
+
+## Practical guidelines (with hooks)
+- If the component is mostly rendering based on props (formatting, lists, layout), prefer a presentational component.
+- If the component needs to call APIs, subscribe to state, or wire domain behavior (handlers that depend on app state), prefer a container wrapper.
+- Prefer hooks in the container (e.g., `useEffect`, `useState`) and keep the presentational component "pure" for easier testing.
+- Avoid over-splitting; use the pattern only when it improves clarity/reuse.
+
+## Sketch example
+```tsx
+type UsersListProps = {
+  users: Array<{ id: string; name: string }>
+  onSelect: (id: string) => void
+}
+
+function UsersList({ users, onSelect }: UsersListProps) {
+  return (
+    <ul>
+      {users.map((u) => (
+        <li key={u.id} onClick={() => onSelect(u.id)}>
+          {u.name}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function UsersPage() {
+  // container: data loading + behavior
+  // (fetch users, define mutation handler, etc.)
+  return <UsersList users={[]} onSelect={() => {}} />
+}
+```
+
+Reference: https://www.geeksforgeeks.org/reactjs/reactjs-container-and-presentational-pattern-in-components/

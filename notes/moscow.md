@@ -1,0 +1,1 @@
+- If GPX files can be large, move XML parsing + conversion into a Web Worker to keep the UI responsive.
