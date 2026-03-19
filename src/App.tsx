@@ -6,6 +6,7 @@ import { GpxUpload } from './components/GpxUpload'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card'
 import { parseGpxToGeoJsonTrackOnly } from './gpx/parseGpx'
 import type { FeatureCollection, Geometry } from 'geojson'
+import { RouteMap } from './map/RouteMap'
 
 export default function App() {
   const [gpxXml, setGpxXml] = React.useState<string | null>(null)
@@ -39,29 +40,35 @@ export default function App() {
               <CardTitle>Route Map</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex min-h-[60vh] items-center justify-center rounded-lg border bg-muted/40 p-4 text-center">
-                {gpxXml ? (
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Loaded: <span className="font-medium text-foreground">{fileName}</span>
-                    </p>
-                    {parseError ? (
-                      <p className="text-sm text-destructive">Parse error: {parseError}</p>
-                    ) : parsed ? (
-                      <p className="text-sm text-muted-foreground">
-                        Parsed features: <span className="font-medium text-foreground">{parsed.features.length}</span>
-                      </p>
-                    ) : null}
-                    <p className="text-sm text-muted-foreground">
-                      Next step: parse GPX to GeoJSON and render the route on the map.
-                    </p>
-                  </div>
-                ) : (
+              {parsed ? (
+                <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Upload a GPX file to see your route.
+                    Loaded: <span className="font-medium text-foreground">{fileName}</span>
                   </p>
-                )}
-              </div>
+                  <RouteMap geojson={parsed} />
+                </div>
+              ) : (
+                <div className="flex min-h-[60vh] items-center justify-center rounded-lg border bg-muted/40 p-4 text-center">
+                  {gpxXml ? (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Loaded: <span className="font-medium text-foreground">{fileName}</span>
+                      </p>
+                      {parseError ? (
+                        <p className="text-sm text-destructive">Parse error: {parseError}</p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Parsing completed, but no route geometry was found.
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Upload a GPX file to see your route.
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </section>
