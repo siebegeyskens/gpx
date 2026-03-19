@@ -11,6 +11,9 @@ type Props = {
   geojson: FeatureCollection<Geometry>
 }
 
+const ROUTE_VISIBLE_WEIGHT_PX = 3
+const ROUTE_HIT_WEIGHT_PX = 24
+
 function positionToLatLng(position: Position): [number, number] {
   // GeoJSON order is [lon, lat, ...]
   const lon = position[0]
@@ -75,12 +78,25 @@ export function RouteMap({ geojson }: Props) {
           />
 
           {polylines.map((positions, idx) => (
-            <Polyline
-              key={`base-${idx}`}
-              positions={positions}
-              pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.9 }}
-              eventHandlers={{ click: onRouteClick }}
-            />
+            <React.Fragment key={`base-${idx}`}>
+              <Polyline
+                positions={positions}
+                pathOptions={{
+                  color: '#2563eb',
+                  weight: ROUTE_VISIBLE_WEIGHT_PX,
+                  opacity: 0.9,
+                }}
+              />
+              <Polyline
+                positions={positions}
+                pathOptions={{
+                  color: '#2563eb',
+                  weight: ROUTE_HIT_WEIGHT_PX,
+                  opacity: 0,
+                }}
+                eventHandlers={{ click: onRouteClick }}
+              />
+            </React.Fragment>
           ))}
 
           {keptSegments.map((segment, idx) => (
