@@ -1,0 +1,33 @@
+---
+description: Mobile-first UI design guidance
+globs: "**/*.{ts,tsx,css,scss}"
+alwaysApply: true
+---
+
+# Mobile-first design
+
+- Write base styles for the smallest screens first; avoid “desktop-first” overrides.
+- Prefer `@media (min-width: ...)` breakpoints so each query scales up from mobile.
+- Use flexible layouts by default: `flex`/`grid` + wrapping (`flex-wrap: wrap`, `gap`, `max-width: 100%`).
+- Avoid fixed widths/heights where possible; use `min-height`/`max-width` and fluid spacing in `rem`.
+- Ensure tap targets meet accessibility expectations (aim for ~44px min height/width) and keep interactive elements comfortably spaced.
+- Make typography responsive (prefer `clamp()` for font sizes/line-heights).
+
+## Example (CSS)
+
+```css
+.card {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .card {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+```

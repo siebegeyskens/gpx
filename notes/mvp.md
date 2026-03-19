@@ -1,0 +1,3 @@
+- list of gpx files
+- upload gpx file
+- map per gpx file

@@ -1,0 +1,2 @@
+- upload gpx files
+- show per file on map
