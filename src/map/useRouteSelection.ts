@@ -5,10 +5,14 @@ import { nearestPointIndex, sliceRouteSegment } from './routeSelection'
 
 type RoutePoint = [number, number]
 
-export function useRouteSelection(routePoints: RoutePoint[]) {
+type UseRouteSelectionOptions = {
+  onKeep: (segment: RoutePoint[]) => void | Promise<void>
+}
+
+export function useRouteSelection(routePoints: RoutePoint[], options: UseRouteSelectionOptions) {
+  const { onKeep } = options
   const [startIdx, setStartIdx] = React.useState<number | null>(null)
   const [endIdx, setEndIdx] = React.useState<number | null>(null)
-  const [keptSegments, setKeptSegments] = React.useState<RoutePoint[][]>([])
 
   const draftSegment = React.useMemo(() => {
     if (startIdx === null || endIdx === null) return []
@@ -36,28 +40,25 @@ export function useRouteSelection(routePoints: RoutePoint[]) {
 
   const keepDraft = React.useCallback(() => {
     if (draftSegment.length < 2) return
-    setKeptSegments((prev) => [...prev, draftSegment])
+    void onKeep(draftSegment)
     setStartIdx(null)
     setEndIdx(null)
-  }, [draftSegment])
+  }, [draftSegment, onKeep])
 
   const resetSelection = React.useCallback(() => {
     setStartIdx(null)
     setEndIdx(null)
-    setKeptSegments([])
   }, [])
 
-  // Reset draft/kept segments when a new route is loaded.
+  // Reset active selection when route points change.
   React.useEffect(() => {
     setStartIdx(null)
     setEndIdx(null)
-    setKeptSegments([])
   }, [routePoints])
 
   return {
     draftSegment,
     endPoint,
-    keptSegments,
     keepDraft,
     onRouteClick,
     resetSelection,
